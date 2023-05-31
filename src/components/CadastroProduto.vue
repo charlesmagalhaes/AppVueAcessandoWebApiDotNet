@@ -19,6 +19,13 @@
       </form>
     </div>
     <h1 style="text-align: center">{{ msg }}</h1>
+    <div class="modal" :class="modalClasses" v-if="modalVisivel">
+      <div class="modal-content">
+        <p>{{ modalMensagem }}</p>
+      </div>
+    </div>
+
+
     <table>
       <tr>
         <th>Nome</th>
@@ -54,6 +61,8 @@ export default {
         descricao: "",
         preco: 0,
       },
+      modalVisivel: false,
+      modalMensagem: "",
     }
   },
 
@@ -78,22 +87,46 @@ export default {
             this.novoProduto.nome = "";
             this.novoProduto.descricao = "";
             this.novoProduto.preco = 0;
+            this.exibirModal("Produto cadastrado com sucesso!",true);
           })
           .catch((error) => {
             console.error(error);
           });
     },
     excluirProduto(produtoId) {
-      console.log('teste',produtoId)
       axios.delete(`https://localhost:44395/api/Produto/${produtoId}`)
           .then((res) => {
-            console.log(res);
-            this.produtos = this.produtos.filter((produto) => produto.id !== produtoId);
+            if(res.data.Sucesso){
+              this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId)
+              this.exibirModal("Produto excluído com sucesso!",true);
+            }else {
+              this.exibirModal(res.data.MensagemErro,false);
+            }
+
           })
           .catch((error) => {
             console.error(error);
+
           });
-    }
+    },
+    exibirModal(mensagem,sucesso) {
+      this.modalVisivel = true;
+      this.modalMensagem = mensagem;
+      this.modalSucesso = sucesso;
+      this.icone = sucesso ? "fa-check" : "fa-times";
+      // Define um timer para fechar o modal após alguns segundos
+      setTimeout(() => {
+        this.modalVisivel = false;
+        this.modalMensagem = "";
+      }, 3000); // Tempo em milissegundos (3 segundos)
+
+      // Adicionar classes CSS dinamicamente
+      if (sucesso) {
+        this.modalClasses = "modal modal-sucesso";
+      } else {
+        this.modalClasses = "modal modal-erro";
+      }
+    },
 
 
   },
@@ -182,5 +215,50 @@ form button:hover {
   border: none;
   border-radius: 15px;
 }
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal p {
+  margin-bottom: 0;
+}
+
+.modal-sucesso .modal-content {
+  background-color: #5eba7d;
+  color: #fff;
+}
+
+.modal-erro .modal-content {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.success-icon {
+  color: #5eba7d;
+}
+
+.error-icon {
+  color: #e74c3c;
+}
+
+
+
 </style>
 
