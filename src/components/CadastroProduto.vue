@@ -96,7 +96,8 @@ export default {
     excluirProduto(produtoId) {
       axios.delete(`https://localhost:44395/api/Produto/${produtoId}`)
           .then((res) => {
-            if(res.data.Sucesso){
+            console.log('Exclusao: ',res.data)
+            if(res.status ===200){
               this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId)
               this.exibirModal("Produto excluído com sucesso!",true);
             }else {
@@ -105,7 +106,7 @@ export default {
 
           })
           .catch((error) => {
-            console.error(error);
+            this.exibirModal(error.response.data,false);
 
           });
     },
