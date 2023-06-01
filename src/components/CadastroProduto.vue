@@ -94,19 +94,29 @@ export default {
           });
     },
     excluirProduto(produtoId) {
+      this.exibirLoading();
       axios.delete(`https://localhost:44395/api/Produto/${produtoId}`)
           .then((res) => {
-            console.log('Exclusao: ',res.data)
             if(res.status ===200){
-              this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId)
-              this.exibirModal("Produto excluído com sucesso!",true);
+              this.fecharLoading();
+              this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId);
+               setTimeout(() =>{
+                 this.exibirModal("Produto excluído com sucesso!",true);
+               },2000)
+
             }else {
-              this.exibirModal(res.data.MensagemErro,false);
+              setTimeout(() => {
+                this.exibirModal(res.data.MensagemErro,false);
+              },2000)
+
             }
 
           })
           .catch((error) => {
-            this.exibirModal(error.response.data,false);
+              this.fecharLoading();
+              setTimeout(() => {
+                this.exibirModal(error.response.data,false);
+              },2000)
 
           });
     },
@@ -128,6 +138,17 @@ export default {
         this.modalClasses = "modal modal-erro";
       }
     },
+
+    exibirLoading() {
+      this.$emit('emitirLoading', true);
+    },
+    fecharLoading() {
+        setTimeout(() => {
+          this.$emit('pararLoading', false);
+        },2000)
+
+
+    }
 
 
   },
