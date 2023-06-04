@@ -75,6 +75,7 @@ export default {
     },
     adicionarProduto() {
       const novoProduto = {
+        Id: 0,
         Nome: this.novoProduto.nome,
         Descricao: this.novoProduto.descricao,
         Preco: this.novoProduto.preco
@@ -83,6 +84,7 @@ export default {
       axios.post(`https://localhost:44395/api/Produto`, novoProduto)
           .then((res) => {
             console.log(res);
+            novoProduto.Id = res.data;
             this.produtos.push(novoProduto);
             this.novoProduto.nome = "";
             this.novoProduto.descricao = "";
@@ -113,6 +115,7 @@ export default {
 
           })
           .catch((error) => {
+            console.log('Erro ao excluir',produtoId)
               this.fecharLoading();
               setTimeout(() => {
                 this.exibirModal(error.response.data,false);
@@ -154,6 +157,8 @@ export default {
   },
 
   created() {
+    this.exibirLoading();
+    this.fecharLoading();
     this.lista(this);
   }
 }
