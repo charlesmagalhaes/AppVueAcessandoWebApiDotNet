@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import axios from 'axios';
+import { buscarProdutos } from '../corelib/api/ApiProdutos';
 
 export default createStore({
     state() {
@@ -15,13 +15,12 @@ export default createStore({
     },
     actions: {
        async BuscarProdutos({ commit }) {
-            axios.get('https://localhost:44395/api/Produto')
-                .then((res) => {
-                    commit('setProduto', res.data);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+           try {
+               const response = await buscarProdutos();
+               commit('setProduto', response.data);
+           } catch (error) {
+               console.error(error);
+           }
         },
     },
     getters: {

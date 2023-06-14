@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import CadastroProduto from "@/components/CadastroProduto";
+import CadastroProduto from "@/views/CadastroProduto";
 import LoadingX from "@/components/LoadingX";
 
 export default {
