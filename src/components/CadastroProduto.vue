@@ -33,7 +33,7 @@
         <th>Acao</th>
       </tr>
       <tbody>
-      <tr v-for="produto in produtos" v-bind:key="produto.Id">
+      <tr v-for="produto in getProdutos" v-bind:key="produto.Id">
         <td>{{produto.Nome}}</td>
         <td>{{produto.Descricao}}</td>
         <td> <button @click="() => excluirProduto(produto.Id)" class="button">Excluir</button> </td>
@@ -48,6 +48,7 @@
 
 <script>
 import axios from 'axios';
+import { useStore } from 'vuex';
 export default {
   name: 'CadastroProduto',
   props: {
@@ -63,6 +64,13 @@ export default {
       },
       modalVisivel: false,
       modalMensagem: "",
+    }
+  },
+  computed: {
+    getProdutos() {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.produtos = this.$store.getters.getProdutos;
+      return this.produtos;
     }
   },
 
@@ -101,11 +109,12 @@ export default {
           .then((res) => {
             if(res.status ===200){
               this.fecharLoading();
-              this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId);
+
+                //this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId);
                setTimeout(() =>{
                  this.exibirModal("Produto excluído com sucesso!",true);
                },2000)
-
+              this.$store.dispatch('BuscarProdutos');
             }else {
               setTimeout(() => {
                 this.exibirModal(res.data.MensagemErro,false);
@@ -157,9 +166,19 @@ export default {
   },
 
   created() {
-    this.exibirLoading();
-    this.fecharLoading();
-    this.lista(this);
+    const store = useStore();
+    store.dispatch('BuscarProdutos')
+        .then(() => {
+
+          this.exibirLoading();
+          this.fecharLoading();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    //this.$watch(() => store.getters.getProdutos, (newProdutos) => {
+      //this.produtos = newProdutos;
+    //});
   }
 }
 </script>
