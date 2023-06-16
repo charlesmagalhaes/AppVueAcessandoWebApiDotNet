@@ -1,25 +1,28 @@
 <template>
   <div id="app" style="margin-top: 50px">
     <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#news">News</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li><a href="#about">About</a></li>
+      <li><router-link to="/">Home</router-link></li>
+      <li><router-link to="/cadastroprodutos">Cadastro de Produtos</router-link></li>
+      <li><router-link to="/about">About</router-link></li>
     </ul>
-    <cadastro-produto @emitirLoading="exibirLoading"  @pararLoading="fecharLoading" msg="Lista de Produtos Cadastrados"/>
+    <main>
+      <router-view></router-view>
+    </main>
+
     <LoadingX v-if="loadingVisivel"></LoadingX>
   </div>
 </template>
 
+
 <script>
-import CadastroProduto from "@/views/CadastroProduto";
+//import CadastroProduto from "@/views/CadastroProduto";
 import LoadingX from "@/components/LoadingX";
 
 export default {
   name: 'App',
   components: {
     LoadingX,
-    CadastroProduto
+    //CadastroProduto
   },
   data: () => {
     return {

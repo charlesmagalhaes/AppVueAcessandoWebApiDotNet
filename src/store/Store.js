@@ -17,7 +17,11 @@ export default createStore({
        async BuscarProdutos({ commit }) {
            try {
                const response = await buscarProdutos();
-               commit('setProduto', response.data);
+               if (response && response.data) {
+                   commit('setProduto', response.data);
+               } else {
+                   // Lógica para lidar com a resposta vazia ou inválida
+               }
            } catch (error) {
                console.error(error);
            }
