@@ -36,7 +36,7 @@
       <tr v-for="produto in getProdutos" v-bind:key="produto.Id">
         <td>{{produto.Nome}}</td>
         <td>{{produto.Descricao}}</td>
-        <td> <button @click="() => excluirProduto(produto.Id)" class="button">Excluir</button> </td>
+        <td> <button @click="() => ExcluirProduto(produto.Id)" class="button">Excluir</button> </td>
       </tr>
       </tbody>
 
@@ -49,6 +49,7 @@
 <script>
 import axios from 'axios';
 import { useStore } from 'vuex';
+import { mapActions } from 'vuex';
 export default {
   name: 'CadastroProduto',
   props: {
@@ -76,13 +77,8 @@ export default {
   },
 
   methods: {
-    lista: (scope) => {
-      axios.get(`https://localhost:44395/api/Produto`).then((res) => {
-        console.log(res);
-        scope.produtos = res.data;
-      })
-    },
-         adicionarProduto() {
+    ...mapActions(['loadingExibicao', 'ModalVisivel','ExcluirProduto']),
+    adicionarProduto() {
         const novoProduto = {
           Id: 0,
           Nome: this.novoProduto.nome,
@@ -90,54 +86,37 @@ export default {
           Preco: this.novoProduto.preco
         };
 
-        // Exibir o loading
-       // this.$store.dispatch('alterExibicao');
+      this.loadingExibicao();
 
         axios.post(`https://localhost:44395/api/Produto`, novoProduto)
             .then((res) => {
-              console.log(res);
               novoProduto.Id = res.data;
               this.produtos.push(novoProduto);
               this.novoProduto.nome = "";
               this.novoProduto.descricao = "";
               this.novoProduto.preco = 0;
-              this.exibirModal("Produto cadastrado com sucesso!", true);
+              setTimeout( () =>{
+                this.loadingExibicao();
+              },2000);
+              setTimeout( () =>{
+                this.ModalVisivel();
+              },2000);
+              //this.exibirModal("Produto cadastrado com sucesso!", true);
             })
             .catch((error) => {
               console.error(error);
             })
             .finally(() => {
-              // Ocultar o loading
-             // this.$store.dispatch('alterExibicao');
+              this.ModalVisivel();
             });
     },
-    excluirProduto(produtoId) {
-      axios.delete(`https://localhost:44395/api/Produto/${produtoId}`)
-          .then((res) => {
-            if(res.status ===200){
-              this.fecharLoading();
-
-                //this.produtos = this.produtos.filter((produto) => produto.Id !== produtoId);
-               setTimeout(() =>{
-                 this.exibirModal("Produto excluído com sucesso!",true);
-               },2000)
-              this.$store.dispatch('BuscarProdutos');
-            }else {
-              setTimeout(() => {
-                this.exibirModal(res.data.MensagemErro,false);
-              },2000)
-
-            }
-
-          })
-          .catch((error) => {
-            console.log('Erro ao excluir',produtoId)
-              this.fecharLoading();
-              setTimeout(() => {
-                this.exibirModal(error.response.data,false);
-              },2000)
-
-          });
+    async ExcluirProduto(produtoId) {
+      console.log('Excluir: ',produtoId)
+      try {
+        await this.$store.dispatch('ExcluirProduto', produtoId);
+      } catch (error) {
+        console.error(error);
+      }
     },
     exibirModal(mensagem,sucesso) {
       this.modalVisivel = true;
@@ -158,18 +137,6 @@ export default {
       }
     },
 
-    exibirLoading() {
-      this.$emit('emitirLoading', true);
-    },
-    fecharLoading() {
-        setTimeout(() => {
-          this.$emit('pararLoading', false);
-        },2000)
-
-
-    }
-
-
   },
 
   created() {
@@ -180,9 +147,6 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-    //this.$watch(() => store.getters.getProdutos, (newProdutos) => {
-      //this.produtos = newProdutos;
-    //});
   }
 }
 </script>

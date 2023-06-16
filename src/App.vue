@@ -8,7 +8,7 @@
     <main>
       <router-view></router-view>
     </main>
-
+    <MensagemUsuario v-if="getModalVisivel"></MensagemUsuario>
     <LoadingX v-if="getLogin"></LoadingX>
   </div>
 </template>
@@ -17,10 +17,12 @@
 <script>
 //import CadastroProduto from "@/views/CadastroProduto";
 import LoadingX from "@/components/LoadingX";
+import MensagemUsuario from "@/components/MensagemUsuario";
 
 export default {
   name: 'App',
   components: {
+    MensagemUsuario,
     LoadingX,
     //CadastroProduto
   },
@@ -31,7 +33,11 @@ export default {
   },
   computed: {
     getLogin(){
-      return this.$store.getters.getLoding;
+      return this.$store.getters.getLoading;
+    },
+    getModalVisivel() {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      return this.$store.getters.getModalVisivel;
     }
   },
 
