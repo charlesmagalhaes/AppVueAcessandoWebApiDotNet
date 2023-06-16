@@ -9,7 +9,7 @@
       <router-view></router-view>
     </main>
 
-    <LoadingX v-if="loadingVisivel"></LoadingX>
+    <LoadingX v-if="getLogin"></LoadingX>
   </div>
 </template>
 
@@ -27,6 +27,11 @@ export default {
   data: () => {
     return {
       loadingVisivel: false
+    }
+  },
+  computed: {
+    getLogin(){
+      return this.$store.getters.getLoding;
     }
   },
 

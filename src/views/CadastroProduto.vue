@@ -72,6 +72,7 @@ export default {
       this.produtos = this.$store.getters.getProdutos;
       return this.produtos;
     }
+
   },
 
   methods: {
@@ -81,30 +82,36 @@ export default {
         scope.produtos = res.data;
       })
     },
-    adicionarProduto() {
-      const novoProduto = {
-        Id: 0,
-        Nome: this.novoProduto.nome,
-        Descricao: this.novoProduto.descricao,
-        Preco: this.novoProduto.preco
-      };
+         adicionarProduto() {
+        const novoProduto = {
+          Id: 0,
+          Nome: this.novoProduto.nome,
+          Descricao: this.novoProduto.descricao,
+          Preco: this.novoProduto.preco
+        };
 
-      axios.post(`https://localhost:44395/api/Produto`, novoProduto)
-          .then((res) => {
-            console.log(res);
-            novoProduto.Id = res.data;
-            this.produtos.push(novoProduto);
-            this.novoProduto.nome = "";
-            this.novoProduto.descricao = "";
-            this.novoProduto.preco = 0;
-            this.exibirModal("Produto cadastrado com sucesso!",true);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        // Exibir o loading
+       // this.$store.dispatch('alterExibicao');
+
+        axios.post(`https://localhost:44395/api/Produto`, novoProduto)
+            .then((res) => {
+              console.log(res);
+              novoProduto.Id = res.data;
+              this.produtos.push(novoProduto);
+              this.novoProduto.nome = "";
+              this.novoProduto.descricao = "";
+              this.novoProduto.preco = 0;
+              this.exibirModal("Produto cadastrado com sucesso!", true);
+            })
+            .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => {
+              // Ocultar o loading
+             // this.$store.dispatch('alterExibicao');
+            });
     },
     excluirProduto(produtoId) {
-      this.exibirLoading();
       axios.delete(`https://localhost:44395/api/Produto/${produtoId}`)
           .then((res) => {
             if(res.status ===200){
@@ -169,9 +176,6 @@ export default {
     const store = useStore();
     store.dispatch('BuscarProdutos')
         .then(() => {
-
-          this.exibirLoading();
-          this.fecharLoading();
         })
         .catch((error) => {
           console.error(error);
