@@ -18,13 +18,6 @@
         <button type="submit">Cadastrar</button>
       </form>
     </div>
-    <h1 style="text-align: center">{{ msg }}</h1>
-    <div class="modal" :class="modalClasses" v-if="modalVisivel">
-      <div class="modal-content">
-        <p>{{ modalMensagem }}</p>
-      </div>
-    </div>
-
 
     <table>
       <tr>
@@ -47,9 +40,7 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { useStore } from 'vuex';
-import { mapActions } from 'vuex';
 export default {
   name: 'CadastroProduto',
   props: {
@@ -68,72 +59,29 @@ export default {
     }
   },
   computed: {
-    getProdutos() {
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-      this.produtos = this.$store.getters.getProdutos;
-      return this.produtos;
+    getProdutos: function () {
+
+      return this.$store.getters.getProdutos;
     }
 
   },
 
   methods: {
-    ...mapActions(['loadingExibicao', 'ModalVisivel','ExcluirProduto']),
-    adicionarProduto() {
-        const novoProduto = {
-          Id: 0,
-          Nome: this.novoProduto.nome,
-          Descricao: this.novoProduto.descricao,
-          Preco: this.novoProduto.preco
-        };
 
-      this.loadingExibicao();
-
-        axios.post(`https://localhost:44395/api/Produto`, novoProduto)
-            .then((res) => {
-              novoProduto.Id = res.data;
-              this.produtos.push(novoProduto);
-              this.novoProduto.nome = "";
-              this.novoProduto.descricao = "";
-              this.novoProduto.preco = 0;
-              setTimeout( () =>{
-                this.loadingExibicao();
-              },2000);
-              setTimeout( () =>{
-                this.ModalVisivel();
-              },2000);
-              //this.exibirModal("Produto cadastrado com sucesso!", true);
-            })
-            .catch((error) => {
-              console.error(error);
-            })
-            .finally(() => {
-              this.ModalVisivel();
-            });
-    },
     async ExcluirProduto(produtoId) {
-      console.log('Excluir: ',produtoId)
       try {
         await this.$store.dispatch('ExcluirProduto', produtoId);
       } catch (error) {
         console.error(error);
       }
     },
-    exibirModal(mensagem,sucesso) {
-      this.modalVisivel = true;
-      this.modalMensagem = mensagem;
-      this.modalSucesso = sucesso;
-      this.icone = sucesso ? "fa-check" : "fa-times";
-      // Define um timer para fechar o modal após alguns segundos
-      setTimeout(() => {
-        this.modalVisivel = false;
-        this.modalMensagem = "";
-      }, 3000); // Tempo em milissegundos (3 segundos)
-
-      // Adicionar classes CSS dinamicamente
-      if (sucesso) {
-        this.modalClasses = "modal modal-sucesso";
-      } else {
-        this.modalClasses = "modal modal-erro";
+    async adicionarProduto() {
+      try {
+        await this.$store.dispatch('adicionarProduto', this.novoProduto);
+        this.novoProduto.nome = '';
+        this.novoProduto.descricao = '';
+      } catch (error) {
+        console.error(error);
       }
     },
 

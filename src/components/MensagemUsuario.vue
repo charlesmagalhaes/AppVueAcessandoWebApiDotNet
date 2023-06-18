@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h1 style="text-align: center">Sucesso ou erro</h1>
-    <div class="modal" :class="modalClasses">
+    <div class="modal" :class="exibirModal()">
       <div class="modal-content">
-        <p>Excluido com sucesse/Adcionado com sucesso</p>
+        <p>{{ getModalVisivel.mensagem }}</p>
       </div>
     </div>
   </div>
@@ -13,8 +12,26 @@
 <script>
 export default {
   name: "MensagemUsuario",
-  computed: {
+  data: () => {
+    return {
+      modalClasses: String
+    }
   },
+
+  computed: {
+    getModalVisivel() {
+      return this.$store.getters.getModalVisivel;
+    }
+  },
+  methods: {
+    exibirModal() {
+      if(this.getModalVisivel.mensagemTitulo == 'sucesso'){
+        return this.modalClasses = "modal modal-sucesso";
+      } else{
+        return this.modalClasses = "modal modal-erro";
+      }
+    },
+  }
 
 }
 </script>

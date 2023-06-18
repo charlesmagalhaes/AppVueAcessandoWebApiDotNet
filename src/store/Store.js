@@ -1,12 +1,16 @@
 import { createStore } from 'vuex';
-import {buscarProdutos, excluirProduto} from '../corelib/api/ApiProdutos';
+import {adicionarProduto, buscarProdutos, excluirProduto} from '../corelib/api/ApiProdutos';
 
 export default createStore({
     state() {
         return {
             produtos: [],
             loadingVisivel: false,
-            modalVisivel: false
+            modalVisivel: {
+                exibir: false,
+                mensagemTitulo: '',
+                mensagem: ''
+            }
         };
     },
     mutations: {
@@ -17,7 +21,9 @@ export default createStore({
             state.loadingVisivel = visivel;
         },
         setModalVisivel(state, visivel) {
-            state.modalVisivel = visivel;
+            state.modalVisivel.exibir = visivel.exibir;
+            state.modalVisivel.mensagemTitulo = visivel.mensagemTitulo;
+            state.modalVisivel.mensagem = visivel.mensagem;
         }
     },
     actions: {
@@ -41,13 +47,60 @@ export default createStore({
             try {
                 await excluirProduto(produtoId);
                 await dispatch('BuscarProdutos');
-                commit('setModalVisivel', true);
+                const mensagem = {
+                    exibir: true,
+                    mensagemTitulo: 'sucesso',
+                    mensagem: 'Produto Excluido com sucesso!'
+                }
+                commit('setModalVisivel', mensagem);
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                commit('setModalVisivel', false);
+                const mensagemF = {
+                    exibir: false,
+                    mensagemTitulo: '',
+                    mensagem: ''
+                }
+                commit('setModalVisivel', mensagemF);
+            } catch (error) {
+                commit('setLoadingVisivel', true);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                commit('setLoadingVisivel', false);
+                commit('setModalVisivel', {exibir:true, mensagemTitulo:'erro',mensagem:error.response.data});
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                commit('setModalVisivel', {exibir:false, mensagemTitulo:'',mensagem:''});
+            }
+        },
+        async adicionarProduto({ commit, state }, novoProduto) {
+            const produto = {
+                Id: 0,
+                Nome: novoProduto.nome,
+                Descricao: novoProduto.descricao,
+            }
+            try {
+                commit('setLoadingVisivel', true);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                const response = await adicionarProduto(produto);
+                commit('setLoadingVisivel', false);
+                const respId = response.data;
+                produto.Id = respId;
+                const mensagem = {
+                    exibir: true,
+                    mensagemTitulo: 'sucesso',
+                    mensagem: 'Produto salvo com sucesso!'
+                }
+                commit('setModalVisivel', mensagem);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                const mensagemF = {
+                    exibir: false,
+                    mensagemTitulo: '',
+                    mensagem: ''
+                }
+                commit('setModalVisivel', mensagemF);
+                commit('setProduto', [...state.produtos, produto]);
             } catch (error) {
                 console.error(error);
             }
         },
+
 
         loadingExibicao({ commit, state }) {
             commit('setLoadingVisivel', !state.loadingVisivel);

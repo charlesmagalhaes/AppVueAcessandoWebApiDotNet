@@ -8,14 +8,13 @@
     <main>
       <router-view></router-view>
     </main>
-    <MensagemUsuario v-if="getModalVisivel"></MensagemUsuario>
-    <LoadingX v-if="getLogin"></LoadingX>
+    <MensagemUsuario v-if="getModalVisivel.exibir"></MensagemUsuario>
+    <LoadingX v-if="getLoading"></LoadingX>
   </div>
 </template>
 
 
 <script>
-//import CadastroProduto from "@/views/CadastroProduto";
 import LoadingX from "@/components/LoadingX";
 import MensagemUsuario from "@/components/MensagemUsuario";
 
@@ -24,31 +23,16 @@ export default {
   components: {
     MensagemUsuario,
     LoadingX,
-    //CadastroProduto
-  },
-  data: () => {
-    return {
-      loadingVisivel: false
-    }
   },
   computed: {
-    getLogin(){
+    getLoading(){
       return this.$store.getters.getLoading;
     },
     getModalVisivel() {
-      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       return this.$store.getters.getModalVisivel;
     }
-  },
-
-  methods: {
-    exibirLoading(i) {
-      this.loadingVisivel = i;
-    },
-    fecharLoading(i) {
-      this.loadingVisivel = i;
-    }
   }
+
 }
 </script>
 
