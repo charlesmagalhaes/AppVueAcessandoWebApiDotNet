@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clonar o repositório do projeto (se estiver usando um VCS)
+                // Ou pode simplesmente pegar o código do projeto aqui
+                // Exemplo:
+                // git 'https://github.com/charlesmagalhaes/AppVueAcessandoWebApiDotNet'
+            }
+        }
+
+        stage('Instalar dependências') {
+            steps {
+                // Instalar as dependências do projeto
+                sh 'npm install'
+                // Ou use yarn, se preferir:
+                // sh 'yarn install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Executar o build do projeto Vue.js
+                sh 'npm run build'
+                // Ou use yarn, se preferir:
+                // sh 'yarn build'
+            }
+        }
+
+        // Você pode adicionar mais estágios conforme necessário, como testes, implantação, etc.
+    }
+
+    // Pós-processamento ou ações de notificação podem ser adicionadas aqui.
+}
